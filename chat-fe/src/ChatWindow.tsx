@@ -3,6 +3,8 @@ import "./chatwindow.css";
 import { useEffect, useCallback, useState, useRef } from "react";
 import io, { Socket } from "socket.io-client";
 
+const CHAT_EVENT: string = process.env.REACT_APP_CHAT_EVENT || "chat_event";
+
 export default function ChatWindow() {
     const [talkText, setTalkText] = useState<string>("");
 
@@ -16,7 +18,7 @@ export default function ChatWindow() {
     const talk = useCallback(() => {
         if (connected) {
             const phrase = talkText;
-            socket?.emit("chat_event", phrase);
+            socket?.emit(CHAT_EVENT, phrase);
             setCurrentChat(cc => `${cc} ${phrase}`);
             setTalkText("");
         }
@@ -26,7 +28,7 @@ export default function ChatWindow() {
     //wait for socket connect
     const setupSocket = useCallback(() => {
         if (socket) return;
-        const socketio = io("http://localhost:3001");
+        const socketio = io(process.env.REACT_APP_CHAT_API as string);
         socketio.on("connect", () => {
             setSocket(socketio);
             setConnected(true);
@@ -35,7 +37,7 @@ export default function ChatWindow() {
 
     //set chat event
     useEffect(() => {
-        socket?.on("chat_event", (arg) => {
+        socket?.on(CHAT_EVENT, (arg) => {
             setCurrentChat(cc => `${cc} ${arg}`);
         });
     }, [socket])
