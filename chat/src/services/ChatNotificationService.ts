@@ -13,21 +13,18 @@ export default class ChatNotificationService implements NotificationService {
     console.log(`ChatNotificationService initialized`);
     this._ioServer = server;
     this._ioServer.engine.use(session);
-
     this._ioServer.on("connection", (socket: Socket) => {
       console.log(`socket ${socket.id} connected`);
       socket.join(this.CHAT_ROOM);
+
       socket.on(this.CHAT_EVENT, (message: string) => {
-        console.log(message);
-        this._ioServer
-        
-          .to(this.CHAT_ROOM)
-          .emit(this.CHAT_EVENT, `The message is: ${message}`);
+        console.log(`socket: ${socket.id} said ${message}`);
+        socket.to(this.CHAT_ROOM).emit(this.CHAT_EVENT, message);
       });
     });
 
     this._ioServer.on("disconnect", (socket: Socket) => {
-      console.log(`${socket.id} disconnected`);
+      console.log(`socket ${socket.id} disconnected`);
       socket.leave(this.CHAT_ROOM);
     });
   }
@@ -39,9 +36,4 @@ export default class ChatNotificationService implements NotificationService {
 
     return this._instance;
   }
-
-  //get client notification
-  public receiveMessage(message: string) {}
-  //broadcast change
-  public broadcastNewMessage(message: string) {}
 }
