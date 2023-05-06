@@ -1,0 +1,3 @@
+type NotificationService = {};
+
+export { NotificationService };
