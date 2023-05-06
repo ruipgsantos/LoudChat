@@ -32,7 +32,7 @@ const serverSession = session({
   },
   secret: process.env.COOKIE_SECRET || uuidv4(),
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   proxy: true,
   cookie: {
     httpOnly: false,
@@ -53,7 +53,11 @@ declare module "http" {
 
 //sockets for chat
 const chatNotificationService = ChatNotificationService.getInstance(
-  new Server(server),
+  new Server(server, {
+    cors: {
+      origin: getCors(),
+    },
+  }),
   serverSession
 );
 

@@ -1,0 +1,34 @@
+textarea:focus,
+input:focus {
+    outline: none;
+}
+
+textarea {
+    height: 30vh;
+    width: 30vw;
+    resize: none;
+
+    font-size: 20pt;
+    color: rgb(180, 180, 180);
+
+    border: solid 1px rgb(180, 180, 180);
+    background-color: hsl(0, 0%, 15%);
+}
+
+input {
+    font-size: 20pt;
+    height: 5vh;
+    color: rgb(180, 180, 180);
+
+    border: solid 1px rgb(180, 180, 180);
+    background-color: hsl(0, 0%, 15%);
+}
+
+.chatwindow {
+    display: flex;
+    flex-direction: column;
+}
+
+.chatwindow * {
+    margin-top: 10px;
+}
