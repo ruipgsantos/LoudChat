@@ -9,10 +9,16 @@ export default function ChatWindow() {
     const [talkText, setTalkText] = useState<string>("");
 
     const [currentChat, setCurrentChat] = useState("");
-    const chatTextRef = useRef(null);
+    const chatTextRef = useRef<any>(null);
 
     const [socket, setSocket] = useState<Socket>();
     const [connected, setConnected] = useState<boolean>(false);
+
+    const keepToBottom = useCallback(() => {
+        setTimeout(() => {
+            chatTextRef.current!.scrollTop = chatTextRef.current?.scrollHeight
+        }, 100)
+    }, [])
 
     //simply send message to server, talk
     const talk = useCallback(() => {
@@ -21,8 +27,10 @@ export default function ChatWindow() {
             socket?.emit(CHAT_EVENT, phrase);
             setCurrentChat(cc => `${cc} ${phrase}`);
             setTalkText("");
+
+            keepToBottom();
         }
-    }, [connected, socket, talkText])
+    }, [connected, keepToBottom, socket, talkText])
 
 
     //wait for socket connect
@@ -39,8 +47,9 @@ export default function ChatWindow() {
     useEffect(() => {
         socket?.on(CHAT_EVENT, (arg) => {
             setCurrentChat(cc => `${cc} ${arg}`);
+            keepToBottom();
         });
-    }, [socket])
+    }, [keepToBottom, socket])
 
     //start socketio
     useEffect(() => {
@@ -50,17 +59,21 @@ export default function ChatWindow() {
 
     return (
         <div className="chatwindow">
-            <textarea ref={chatTextRef} value={currentChat} readOnly
-            >
-            </textarea>
-            <input onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    talk();
-                }
-            }} value={talkText} onChange={(event) => {
-                setTalkText(tt => event.target.value);
-            }}></input>
+            <div className="chatContainer">
+                <textarea ref={chatTextRef} value={currentChat} readOnly
+                >
+                </textarea>
+            </div>
+            <div className="inputContainer">
+                <input onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        talk();
+                    }
+                }} value={talkText} onChange={(event) => {
+                    setTalkText(tt => event.target.value);
+                }}></input>
+            </div>
         </div>
     )
 }
