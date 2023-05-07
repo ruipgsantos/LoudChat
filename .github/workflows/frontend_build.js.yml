@@ -6,10 +6,10 @@ name: front-end React
 on:
   push:
     branches: ["main"]
-    paths: ["chat-fe"]
+    paths: ["chat-fe/**"]
   pull_request:
     branches: ["main"]
-    paths: ["chat-fe"]
+    paths: ["chat-fe/**"]
 
 jobs:
   build:
