@@ -13,9 +13,6 @@ on:
 
 jobs:
   build:
-    defaults:
-      run:
-        working-directory: chat-fe
     runs-on: ubuntu-latest
 
     strategy:
@@ -30,5 +27,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
       - run: npm ci
+        working-directory: chat-fe
       - run: npm run build --if-present
+        working-directory: chat-fe
     #- run: npm test
