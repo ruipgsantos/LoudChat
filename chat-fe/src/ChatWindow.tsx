@@ -54,6 +54,7 @@ export default function ChatWindow() {
     //start socketio
     useEffect(() => {
         setupSocket();
+        //eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 
