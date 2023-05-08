@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import { v4 as uuidv4 } from "uuid";
 import { getCors } from "./utils";
-import ChatNotificationService from "./services/ChatNotificationService";
+import ChatNotificationService from "./services/chat-notification.service";
 require("dotenv").config();
 
 const app = express();

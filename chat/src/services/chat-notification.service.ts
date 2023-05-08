@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
-import { NotificationService } from "../types/NotificationService";
-import { NotificationSession } from "../types/NotificationSession";
+import { NotificationService } from "../types/notification.service";
+import { NotificationSession } from "../types/notification.session";
 
 export default class ChatNotificationService implements NotificationService {
   readonly CHAT_ROOM = "chat_room";
