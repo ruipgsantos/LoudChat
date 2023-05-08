@@ -14,11 +14,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: chat-fe
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [18.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -27,6 +29,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+          cache-dependency-path: "chat-fe/package-lock.json"
       - run: npm ci
       - run: npm run build --if-present
     #- run: npm test

@@ -11,15 +11,31 @@ textarea {
     font-size: 20pt;
     color: rgb(180, 180, 180);
 
+    border: none;
+    background-color: hsl(0, 0%, 15%);
+
+    overflow: hidden;
+}
+
+.chatContainer {
+    padding: 20px;
     border: solid 1px rgb(180, 180, 180);
     background-color: hsl(0, 0%, 15%);
 }
 
 input {
+    width: 100%;
+
     font-size: 20pt;
     height: 5vh;
     color: rgb(180, 180, 180);
 
+    border: none;
+    background-color: hsl(0, 0%, 15%);
+}
+
+.inputContainer {
+    padding: 5px;
     border: solid 1px rgb(180, 180, 180);
     background-color: hsl(0, 0%, 15%);
 }
