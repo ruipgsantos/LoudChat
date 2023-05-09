@@ -1,5 +1,5 @@
 import express from "express";
 
-type NotificationSession = express.RequestHandler;
+interface NotificationSession {};
 
 export { NotificationSession };

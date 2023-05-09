@@ -8,7 +8,7 @@ const usermsg2 = { message: "message2", size: 2 };
 
 describe("Test message cache", () => {
   beforeEach(() => {
-    chatCacheService.resetQueue();
+    chatCacheService.clear();
   });
 
   it("should return empty list", () => {
@@ -33,7 +33,7 @@ describe("Test message cache", () => {
 
     expect(chatCacheService.getAllMessages()).toEqual([usermsg1, usermsg2]);
   });
-  it.only(`should return the last inserted ${process.env.MESSAGE_CACHE_LIMIT} messages`, () => {
+  it(`should return the last inserted ${process.env.MESSAGE_CACHE_LIMIT} messages`, () => {
     for (let i = 0; i < 10; i++) {
       chatCacheService.addMessage({
         message: `message${i}`,

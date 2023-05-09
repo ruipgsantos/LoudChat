@@ -1,3 +1,0 @@
-type NotificationService = {};
-
-export { NotificationService };

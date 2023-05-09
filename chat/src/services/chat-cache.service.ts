@@ -1,6 +1,7 @@
-type UserMessage = { message: string; size: number };
+import CacheService from "../interfaces/cache.interface";
+import { UserMessage } from "../types/user-message.type";
 
-class ChatCacheService {
+class ChatCacheService implements CacheService<UserMessage> {
   private data: { [index: number]: UserMessage } = {};
   private head = -1;
   private tail = 0;
@@ -14,7 +15,7 @@ class ChatCacheService {
       : 20;
   }
 
-  public addMessage(userMessage: UserMessage) {
+  public addMessage(userMessage: UserMessage): UserMessage {
     this.head++;
     this.data[this.head] = userMessage;
 
@@ -24,13 +25,15 @@ class ChatCacheService {
     } else if (this.head - this.tail >= this.CACHE_LIMIT - 1) {
       this.isAtLimit = true;
     }
+
+    return userMessage;
   }
 
-  public getLastMessage() {
+  public getLastMessage(): UserMessage {
     return this.data[this.head];
   }
 
-  public getAllMessages() {
+  public getAllMessages(): UserMessage[] {
     const messageList: UserMessage[] = [];
 
     for (let i = this.tail; i <= this.head; i++) {
@@ -40,7 +43,7 @@ class ChatCacheService {
     return messageList;
   }
 
-  public resetQueue() {
+  public clear(): void {
     this.data = {};
     this.head = -1;
     this.tail = 0;
