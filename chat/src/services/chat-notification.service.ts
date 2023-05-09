@@ -1,25 +1,38 @@
 import { Server, Socket } from "socket.io";
-import { NotificationService } from "../types/NotificationService";
-import { NotificationSession } from "../types/NotificationSession";
+import { NotificationSession } from "../interfaces/notification.interface";
+import { chatFrequencyService } from "./chat-frequency.service";
 
-export default class ChatNotificationService implements NotificationService {
+export default class ChatNotificationService {
   readonly CHAT_ROOM = "chat_room";
   readonly CHAT_EVENT = "chat_event";
-  private _ioServer: Server;
+  readonly CONNECT_EVENT = "connect_event";
 
   private static _instance: ChatNotificationService;
 
+  private _ioServer: Server;
+
   private constructor(server: Server, session: NotificationSession) {
     console.log(`ChatNotificationService initialized`);
+
     this._ioServer = server;
     this._ioServer.engine.use(session);
     this._ioServer.on("connection", (socket: Socket) => {
       console.log(`socket ${socket.id} connected`);
       socket.join(this.CHAT_ROOM);
 
+      //get all cached messages and respond
+      const cachedMessages = chatFrequencyService.getAllMessages();
+      socket.emit(this.CONNECT_EVENT, cachedMessages);
+
       socket.on(this.CHAT_EVENT, (message: string) => {
-        console.log(`socket: ${socket.id} said ${message}`);
-        socket.to(this.CHAT_ROOM).emit(this.CHAT_EVENT, message);
+        console.log(`socket ${socket.id} said ${message}`);
+        const userMessage = chatFrequencyService.addUserMessage(
+          message,
+          socket.id
+        );
+        //cache this message and send back with size to all (including self)
+        // socket.to(this.CHAT_ROOM).emit(this.CHAT_EVENT, message);
+        this._ioServer.to(this.CHAT_ROOM).emit(this.CHAT_EVENT, userMessage);
       });
     });
 
