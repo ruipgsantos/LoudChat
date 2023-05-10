@@ -1,5 +1,5 @@
 import CacheService from "../interfaces/cache.interface";
-import { UserMessage } from "../types/user-message.type";
+import { UserMessage } from "../types/UserMessage";
 
 class ChatCacheService implements CacheService<UserMessage> {
   private data: { [index: number]: UserMessage } = {};

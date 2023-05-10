@@ -1,5 +1,5 @@
 import CacheService from "../interfaces/cache.interface";
-import { UserMessage } from "../types/user-message.type";
+import { UserMessage } from "../types/UserMessage";
 import { chatCacheService } from "./chat-cache.service";
 
 class ChatFrequencyService {
