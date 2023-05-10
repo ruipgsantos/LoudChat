@@ -21,23 +21,19 @@ app.use(
   cors({
     origin: getCors(),
     methods: ["GET", "POST"],
-
     credentials: true,
   })
 );
 
 const serverSession = session({
-  genid: function () {
-    return uuidv4();
-  },
   secret: process.env.COOKIE_SECRET || uuidv4(),
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: true,
   proxy: true,
   cookie: {
     httpOnly: false,
     secure: false,
-    maxAge: 1000 * 60 * 60,
+    maxAge: 1000 * 60 * 60 * 24,
     sameSite: "lax",
   },
 });
@@ -52,14 +48,16 @@ declare module "http" {
 }
 
 //sockets for chat
-const chatNotificationService = ChatNotificationService.getInstance(
-  new Server(server, {
-    cors: {
-      origin: getCors(),
-    },
-  }),
-  serverSession
-);
+const io = new Server(server, {
+  transports: ["websocket", "polling"],
+  cors: {
+    origin: getCors(),
+    credentials: true,
+    methods: ["GET", "POST"],
+  },
+});
+
+const chatNotificationService = new ChatNotificationService(io, serverSession);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("OK!");
