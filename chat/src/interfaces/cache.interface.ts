@@ -6,4 +6,6 @@ export default interface CacheService<T> {
   getAllMessages(): T[];
 
   clear(): void;
+
+  applyTransformation(transform: (element: T) => T): void;
 }

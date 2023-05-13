@@ -1,5 +1,7 @@
+import config from "./env";
+
 export const getCors = (): any[] => {
-  const corsArr: string[] = process.env.CORS_ORIGINS?.split(",") || [];
+  const corsArr: string[] = config.corsOrigins?.split(",") || [];
 
   const requestedCors = corsArr.map((corsStr) => {
     const isRegex = corsStr.at(0) === "^";

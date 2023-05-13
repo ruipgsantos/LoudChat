@@ -1,4 +1,5 @@
 process.env.MESSAGE_CACHE_LIMIT = "5";
+import { UserMessage } from "../../types/user-message.type";
 import { chatCacheService } from "../chat-cache.service";
 
 require("dotenv").config();
@@ -45,5 +46,24 @@ describe("Test message cache", () => {
     expect(allMessages).toHaveLength(5);
     expect(allMessages[0]).toEqual({ message: "message5", size: 5 });
     expect(allMessages[4]).toEqual({ message: "message9", size: 9 });
+  });
+  it(`should perform transformation successfully`, () => {
+    for (let i = 0; i < 5; i++) {
+      chatCacheService.addMessage({
+        message: `message${i}`,
+        size: 0,
+      });
+    }
+
+    const allMessages = chatCacheService.getAllMessages();
+    allMessages.forEach((um) => expect(um.size).toEqual(0));
+
+    chatCacheService.applyTransformation((um: UserMessage) => {
+      const umcopy = um;
+      umcopy.size++;
+      return umcopy;
+    });
+
+    allMessages.forEach((um) => expect(um.size).toEqual(1));
   });
 });

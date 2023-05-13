@@ -1,13 +1,13 @@
 import { Server, Socket } from "socket.io";
 import { NotificationSession } from "../interfaces/notification.interface";
 import { chatFrequencyService } from "./chat-frequency.service";
+import Observer from "../interfaces/observer.interface";
 
-export default class ChatNotificationService {
+export default class ChatNotificationService implements Observer {
   readonly CHAT_ROOM = "chat_room";
   readonly CHAT_EVENT = "chat_event";
+  readonly TICK_EVENT = "tick_event";
   readonly CONNECT_EVENT = "connect_event";
-
-  private static _instance: ChatNotificationService;
 
   private _ioServer: Server;
 
@@ -16,6 +16,7 @@ export default class ChatNotificationService {
 
     this._ioServer = server;
     this._ioServer.engine.use(session);
+    chatFrequencyService.subscribe(this);
     this._ioServer.on("connection", (socket: Socket) => {
       const socketLogStr = this.getSocketLogString(socket);
       const sessionId = socket.request.session.id;
@@ -24,7 +25,6 @@ export default class ChatNotificationService {
 
       //get all cached messages and respond
       const cachedMessages = chatFrequencyService.getAllMessages();
-
       socket.emit(this.CONNECT_EVENT, cachedMessages);
 
       socket.on(this.CHAT_EVENT, (message: string) => {
@@ -35,7 +35,6 @@ export default class ChatNotificationService {
         );
 
         //cache this message and send back with size to all (including self)
-        // socket.to(this.CHAT_ROOM).emit(this.CHAT_EVENT, message);
         this._ioServer.to(this.CHAT_ROOM).emit(this.CHAT_EVENT, userMessage);
       });
     });
@@ -45,6 +44,10 @@ export default class ChatNotificationService {
       console.log(`${socketLogStr} disconnected`);
       socket.leave(this.CHAT_ROOM);
     });
+  }
+
+  publish(): void {
+    this._ioServer.to(this.CHAT_ROOM).emit(this.TICK_EVENT);
   }
 
   private getSocketLogString(socket: Socket) {
