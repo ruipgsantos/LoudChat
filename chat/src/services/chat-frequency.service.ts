@@ -3,12 +3,13 @@ import Observable from "../interfaces/observable.interface";
 import Observer from "../interfaces/observer.interface";
 import CacheService from "../interfaces/cache.interface";
 import { UserMessage } from "../types/user-message.type";
-import { chatCacheService } from "./chat-cache.service";
 
 require("dotenv").config();
 
 class ChatFrequencyService implements Observable {
   private readonly START_SIZE = 0;
+
+  private mainTicker: NodeJS.Timer;
 
   private _subscribers: Observer[] = [];
 
@@ -22,7 +23,7 @@ class ChatFrequencyService implements Observable {
     this._messageCache = messageCache;
 
     //main cache down ticker
-    setInterval(() => {
+    this.mainTicker = setInterval(() => {
       this.tickDown();
     }, config.ticker || 60000);
   }
@@ -103,8 +104,14 @@ class ChatFrequencyService implements Observable {
 
     this._subscribers.forEach((s) => s.publish());
   }
+
+  public shutDown() {
+    for (let ticker of Object.values(this._userTickers)) {
+      clearInterval(ticker);
+    }
+
+    clearInterval(this.mainTicker);
+  }
 }
 
-const chatFrequencyService = new ChatFrequencyService(chatCacheService);
-
-export { chatFrequencyService };
+export { ChatFrequencyService };

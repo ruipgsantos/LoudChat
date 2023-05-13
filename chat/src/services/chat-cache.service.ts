@@ -58,6 +58,4 @@ class ChatCacheService implements CacheService<UserMessage> {
   }
 }
 
-const chatCacheService = new ChatCacheService();
-
-export { chatCacheService };
+export { ChatCacheService };

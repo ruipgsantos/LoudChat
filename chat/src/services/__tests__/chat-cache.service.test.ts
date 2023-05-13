@@ -1,6 +1,6 @@
 process.env.MESSAGE_CACHE_LIMIT = "5";
 import { UserMessage } from "../../types/user-message.type";
-import { chatCacheService } from "../chat-cache.service";
+import { ChatCacheService } from "../chat-cache.service";
 
 require("dotenv").config();
 
@@ -8,6 +8,12 @@ const usermsg1 = { message: "message1", size: 1 };
 const usermsg2 = { message: "message2", size: 2 };
 
 describe("Test message cache", () => {
+  let chatCacheService: ChatCacheService;
+
+  beforeAll(() => {
+    chatCacheService = new ChatCacheService();
+  });
+
   beforeEach(() => {
     chatCacheService.clear();
   });

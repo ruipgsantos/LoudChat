@@ -8,6 +8,8 @@ import morgan from "morgan";
 import { v4 as uuidv4 } from "uuid";
 import { getCors } from "./utils";
 import ChatNotificationService from "./services/chat-notification.service";
+import { ChatFrequencyService } from "./services/chat-frequency.service";
+import { ChatCacheService } from "./services/chat-cache.service";
 
 const app = express();
 const server = http.createServer(app);
@@ -56,10 +58,20 @@ const io = new Server(server, {
   },
 });
 
-const chatNotificationService = new ChatNotificationService(io, serverSession);
+const chatCache = new ChatCacheService();
+const chatFreqService = new ChatFrequencyService(chatCache);
+const chatNotificationService = new ChatNotificationService(
+  io,
+  serverSession,
+  chatFreqService
+);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("OK!");
+});
+
+process.on("exit", () => {
+  chatFreqService.shutDown();
 });
 
 export default server;
