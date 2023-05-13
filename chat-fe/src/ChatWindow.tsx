@@ -3,7 +3,7 @@ import "./chatwindow.css";
 import { useEffect, useCallback, useState, useRef } from "react";
 import io, { Socket } from "socket.io-client";
 import { UserMessage } from "./external/UserMessage";
-import { CHAT_EVENT, CONNECT_EVENT } from "./external/SocketEvents";
+import { CHAT_EVENT, CONNECT_EVENT, TICK_EVENT } from "./external/SocketEvents";
 
 
 export default function ChatWindow() {
@@ -52,6 +52,17 @@ export default function ChatWindow() {
                 setCurrentChat(userMessages);
                 keepToBottom();
             })
+
+            socketio?.on(TICK_EVENT, () => {
+                setCurrentChat((cc) => {
+                    const aux = [...cc];
+                    return aux.map((um: UserMessage) => {
+                        const decreaseAmt = Math.random();
+                        um.size -= decreaseAmt;
+                        return um;
+                    })
+                })
+            })
         });
     }, [keepToBottom, socket])
 
@@ -67,7 +78,7 @@ export default function ChatWindow() {
         for (let i = 0; i < currentChat.length; i++) {
             const words = currentChat[i].message.split(' ');
             for (let j = 0; j < words.length; j++) {
-                res.push(<span key={j * i} style={{ fontSize: currentChat[i].size * 1.5 + 10 }}>{words[j]}</span>)
+                res.push(<span key={j + 1 * i + 1} style={{ fontSize: currentChat[i].size * 1.5 + 10, transition: "font-size 5s" }}>{words[j]}</span>)
             }
         }
 
