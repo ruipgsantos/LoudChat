@@ -6,7 +6,7 @@ export const getCors = (): any[] => {
   const requestedCors = corsArr.map((corsStr) => {
     console.log(`string: ${corsStr}`);
 
-    const isRegex = corsStr.at(0) === "^";
+    const isRegex = corsStr.charAt(0) === "^";
 
     return isRegex ? new RegExp(corsStr) : corsStr;
   });
