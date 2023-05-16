@@ -33,8 +33,9 @@ div {
     border: solid 1px rgb(180, 180, 180);
     background-color: hsl(0, 0%, 15%);
 
-    width: 90vw;
-    height: 70vh}
+    /* width: 30vw; */
+    height: 30vh;
+}
 
 input {
     width: 100%;
@@ -56,6 +57,7 @@ input {
 .chatwindow {
     display: flex;
     flex-direction: column;
+    width: 50vw;
 }
 
 .chatwindow * {

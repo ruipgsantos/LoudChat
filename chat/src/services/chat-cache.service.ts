@@ -1,8 +1,11 @@
+import config from "../env";
 import CacheService from "../interfaces/cache.interface";
 import { UserMessage } from "../types/user-message.type";
 
+type UserMessageQueue = { [index: number]: UserMessage };
 class ChatCacheService implements CacheService<UserMessage> {
-  private data: { [index: number]: UserMessage } = {};
+  private data: UserMessageQueue = {};
+
   private head = -1;
   private tail = 0;
   private isAtLimit = false;
@@ -10,9 +13,13 @@ class ChatCacheService implements CacheService<UserMessage> {
   private CACHE_LIMIT: number;
 
   constructor() {
-    this.CACHE_LIMIT = process.env.MESSAGE_CACHE_LIMIT
-      ? Number(process.env.MESSAGE_CACHE_LIMIT)
-      : 20;
+    this.CACHE_LIMIT = config.messageCacheLimit || 20;
+  }
+
+  applyTransformation(transform: (element: UserMessage) => UserMessage): void {
+    for (let [_, userMessage] of Object.entries(this.data)) {
+      userMessage = transform(userMessage);
+    }
   }
 
   public addMessage(userMessage: UserMessage): UserMessage {
@@ -51,6 +58,4 @@ class ChatCacheService implements CacheService<UserMessage> {
   }
 }
 
-const chatCacheService = new ChatCacheService();
-
-export { chatCacheService };
+export { ChatCacheService };

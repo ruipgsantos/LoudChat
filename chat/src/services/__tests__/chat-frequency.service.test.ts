@@ -1,8 +1,14 @@
-import { chatFrequencyService } from "../chat-frequency.service";
+import { ChatCacheService } from "../chat-cache.service";
+import { ChatFrequencyService } from "../chat-frequency.service";
 
 describe("chat frequency service tests", () => {
+  let chatFrequencyService: ChatFrequencyService;
+
   beforeEach(() => {
-    chatFrequencyService.clearMessages();
+    chatFrequencyService = new ChatFrequencyService(new ChatCacheService());
+  });
+  afterEach(() => {
+    chatFrequencyService.shutDown();
   });
 
   it("should add subsequent messages and size should increase", () => {
