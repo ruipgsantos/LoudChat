@@ -34,7 +34,8 @@ const serverSession = session({
     httpOnly: false,
     secure: false,
     maxAge: 1000 * 60 * 60 * 24,
-    sameSite: "lax",
+    sameSite: "none",
+    domain: "loudchat.onrender.com",
   },
 });
 
