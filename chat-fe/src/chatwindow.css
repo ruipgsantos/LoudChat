@@ -30,11 +30,17 @@ div {
 
 .chatContainer {
     padding: 10px;
-    border: solid 1px rgb(180, 180, 180);
+    /* border: solid 1px rgb(180, 180, 180); */
     background-color: hsl(0, 0%, 15%);
 
-    /* width: 30vw; */
-    height: 30vh;
+    width:100vw;
+    height: 100vh;
+    
+
+    top: 0;
+    left: 0;
+
+    position:absolute;
 }
 
 input {
@@ -52,6 +58,8 @@ input {
     padding: 5px;
     border: solid 1px rgb(180, 180, 180);
     background-color: hsl(0, 0%, 15%);
+
+    z-index: 10;
 }
 
 .chatwindow {
@@ -61,5 +69,5 @@ input {
 }
 
 .chatwindow * {
-    margin-top: 10px;
+    /* margin-top: 10px; */
 }
