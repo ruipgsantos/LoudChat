@@ -58,7 +58,9 @@ export default function ChatWindow() {
                     const aux = [...cc];
                     return aux.map((um: UserMessage) => {
                         const decreaseAmt = Math.random();
-                        um.size -= decreaseAmt;
+                        if (um.size > -10) {
+                            um.size -= decreaseAmt;
+                        }
                         return um;
                     })
                 })
