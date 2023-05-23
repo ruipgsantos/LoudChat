@@ -9,7 +9,9 @@ import { v4 as uuidv4 } from "uuid";
 import { getCors } from "./utils";
 import ChatNotificationService from "./services/chat-notification.service";
 import { ChatFrequencyService } from "./services/chat-frequency.service";
-import { ChatCacheService } from "./services/chat-cache.service";
+import CacheService from "./interfaces/cache.interface";
+import { UserMessage } from "./types/user-message.type";
+import RedisChatCache from "./services/redis-chat-cache.service";
 
 const app = express();
 const server = http.createServer(app);
@@ -58,7 +60,9 @@ const io = new Server(server, {
   },
 });
 
-const chatCache = new ChatCacheService();
+// const chatCache: CacheService<UserMessage> = new ChatCacheService();
+const chatCache: CacheService<UserMessage> = new RedisChatCache();
+
 const chatFreqService = new ChatFrequencyService(chatCache);
 const chatNotificationService = new ChatNotificationService(
   io,
@@ -68,6 +72,10 @@ const chatNotificationService = new ChatNotificationService(
 
 app.get("/", (req: Request, res: Response) => {
   res.send("OK!");
+});
+app.get("/messages", async (req: Request, res: Response) => {
+  const msgs = await chatFreqService.getAllMessages();
+  res.send(msgs);
 });
 
 process.on("exit", () => {

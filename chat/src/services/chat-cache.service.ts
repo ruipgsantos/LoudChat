@@ -16,13 +16,15 @@ class ChatCacheService implements CacheService<UserMessage> {
     this.CACHE_LIMIT = config.messageCacheLimit || 20;
   }
 
-  applyTransformation(transform: (element: UserMessage) => UserMessage): void {
+  async applyTransformation(
+    transform: (element: UserMessage) => UserMessage
+  ): Promise<void> {
     for (let [_, userMessage] of Object.entries(this.data)) {
       userMessage = transform(userMessage);
     }
   }
 
-  public addMessage(userMessage: UserMessage): UserMessage {
+  public async addMessage(userMessage: UserMessage): Promise<UserMessage> {
     this.head++;
     this.data[this.head] = userMessage;
 
@@ -36,11 +38,7 @@ class ChatCacheService implements CacheService<UserMessage> {
     return userMessage;
   }
 
-  public getLastMessage(): UserMessage {
-    return this.data[this.head];
-  }
-
-  public getAllMessages(): UserMessage[] {
+  public async getAllMessages(): Promise<UserMessage[]> {
     const messageList: UserMessage[] = [];
 
     for (let i = this.tail; i <= this.head; i++) {
@@ -55,6 +53,11 @@ class ChatCacheService implements CacheService<UserMessage> {
     this.head = -1;
     this.tail = 0;
     this.isAtLimit = false;
+  }
+
+  public async startup(): Promise<void> {}
+  public async shutdown(): Promise<void> {
+    this.clear();
   }
 }
 
