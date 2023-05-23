@@ -42,23 +42,29 @@ export default function ChatWindow() {
 
 
             socketio?.on(CHAT_EVENT, (userMessage: UserMessage) => {
-                setCurrentChat((cc) => {
-                    return [...cc, userMessage]
-                })
-                keepToBottom();
+                if (userMessage) {
+                    setCurrentChat((cc) => {
+                        return [...cc, userMessage]
+                    })
+                    keepToBottom();
+                }
             });
 
             socketio?.on(CONNECT_EVENT, (userMessages: UserMessage[]) => {
-                setCurrentChat(userMessages);
-                keepToBottom();
+                if (userMessages && userMessages.length > 0) {
+                    setCurrentChat(userMessages);
+                    keepToBottom();
+                }
+
             })
 
             socketio?.on(TICK_EVENT, () => {
                 setCurrentChat((cc) => {
                     const aux = [...cc];
                     return aux.map((um: UserMessage) => {
-                        const decreaseAmt = Math.random();
-                        um.size -= decreaseAmt;
+                        if (um.size > 0) {
+                            um.size--;
+                        }
                         return um;
                     })
                 })
