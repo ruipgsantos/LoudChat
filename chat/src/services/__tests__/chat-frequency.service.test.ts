@@ -11,25 +11,33 @@ describe("chat frequency service tests", () => {
     chatFrequencyService.shutDown();
   });
 
-  it("should add subsequent messages and size should increase", () => {
-    expect(chatFrequencyService.addUserMessage("message1", "id1")).toEqual({
+  it("should add subsequent messages and size should increase", async () => {
+    await expect(
+      chatFrequencyService.addUserMessage("message1", "id1")
+    ).resolves.toEqual({
       message: "message1",
       size: 0,
     });
-    expect(chatFrequencyService.addUserMessage("message1", "id1")).toEqual({
+    await expect(
+      chatFrequencyService.addUserMessage("message1", "id1")
+    ).resolves.toEqual({
       message: "message1",
       size: 1,
     });
-    expect(chatFrequencyService.addUserMessage("message1", "id1")).toEqual({
+    await expect(
+      chatFrequencyService.addUserMessage("message1", "id1")
+    ).resolves.toEqual({
       message: "message1",
       size: 2,
     });
   });
-  it("should get correct latest message size after adding twice", () => {
+  it("should get correct latest message size after adding twice", async () => {
     chatFrequencyService.addUserMessage("message1", "id1");
     chatFrequencyService.addUserMessage("message2", "id1");
 
-    expect(chatFrequencyService.getLatestMessage()).toEqual({
+    const allMsgs = await chatFrequencyService.getAllMessages();
+
+    expect(allMsgs[1]).toEqual({
       message: "message2",
       size: 1,
     });
