@@ -18,22 +18,27 @@ describe("Test message cache", () => {
     chatCacheService.clear();
   });
 
-  it("should return empty list", () => {
-    expect(chatCacheService.getAllMessages()).toEqual([]);
-    
+  it("should return empty list", async () => {
+    await expect(chatCacheService.getAllMessages()).resolves.toEqual([]);
   });
-  
-  it("should return all the messages", () => {
+
+  it("should return all the messages", async () => {
     chatCacheService.addMessage(usermsg1);
     chatCacheService.addMessage(usermsg2);
 
-    expect(chatCacheService.getAllMessages()).toEqual([usermsg1, usermsg2]);
+    await expect(chatCacheService.getAllMessages()).resolves.toEqual([
+      usermsg1,
+      usermsg2,
+    ]);
   });
-  it("should return only the last ", () => {
-    chatCacheService.addMessage(usermsg1);
-    chatCacheService.addMessage(usermsg2);
+  it("should return only the last ", async () => {
+    await chatCacheService.addMessage(usermsg1);
+    await chatCacheService.addMessage(usermsg2);
 
-    expect(chatCacheService.getAllMessages()).toEqual([usermsg1, usermsg2]);
+    await expect(chatCacheService.getAllMessages()).resolves.toEqual([
+      usermsg1,
+      usermsg2,
+    ]);
   });
   it(`should return the last inserted ${process.env.MESSAGE_CACHE_LIMIT} messages`, async () => {
     for (let i = 0; i < 10; i++) {
