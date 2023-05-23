@@ -1,11 +1,12 @@
 export default interface CacheService<T> {
-  addMessage(userMessage: T): T;
+  startup(): Promise<void>;
+  shutdown(): Promise<void>;
 
-  getLastMessage(): T;
+  addMessage(userMessage: T): Promise<T>;
 
-  getAllMessages(): T[];
+  getAllMessages(): Promise<T[]>;
 
   clear(): void;
 
-  applyTransformation(transform: (element: T) => T): void;
+  applyTransformation(transform: (element: T) => T): Promise<void>;
 }

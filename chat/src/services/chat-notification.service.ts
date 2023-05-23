@@ -25,19 +25,20 @@ export default class ChatNotificationService implements Observer {
     this._ioServer = server;
     this._ioServer.engine.use(session);
     this._chatFrequencyService.subscribe(this);
-    this._ioServer.on("connection", (socket: Socket) => {
+    this._ioServer.on("connection", async (socket: Socket) => {
       const socketLogStr = this.getSocketLogString(socket);
       const sessionId = socket.request.session.id;
       console.log(`${socketLogStr} connected`);
       socket.join(this.CHAT_ROOM);
 
       //get all cached messages and respond
-      const cachedMessages = this._chatFrequencyService.getAllMessages();
+      const cachedMessages = await this._chatFrequencyService.getAllMessages();
+
       socket.emit(this.CONNECT_EVENT, cachedMessages);
 
-      socket.on(this.CHAT_EVENT, (message: string) => {
+      socket.on(this.CHAT_EVENT, async (message: string) => {
         console.log(`${socketLogStr} said ${message}`);
-        const userMessage = this._chatFrequencyService.addUserMessage(
+        const userMessage = await this._chatFrequencyService.addUserMessage(
           message,
           sessionId
         );

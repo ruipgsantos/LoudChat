@@ -22,6 +22,8 @@ class ChatFrequencyService implements Observable {
   constructor(messageCache: CacheService<UserMessage>) {
     this._messageCache = messageCache;
 
+    this._messageCache.startup();
+
     //main cache down ticker
     this.mainTicker = setInterval(() => {
       this.tickDown();
@@ -33,7 +35,10 @@ class ChatFrequencyService implements Observable {
   }
 
   //signal user activity
-  public addUserMessage(message: string, id: string): UserMessage {
+  public async addUserMessage(
+    message: string,
+    id: string
+  ): Promise<UserMessage> {
     if (this._userFrequencies[id] === undefined) {
       this._userFrequencies[id] = this.START_SIZE;
 
@@ -59,7 +64,7 @@ class ChatFrequencyService implements Observable {
       message,
       size: this._userFrequencies[id],
     };
-    this._messageCache.addMessage(userMessage);
+    await this._messageCache.addMessage(userMessage);
 
     return userMessage;
   }
@@ -83,12 +88,8 @@ class ChatFrequencyService implements Observable {
     }, this._userTickerTimes[id]);
   }
 
-  public getLatestMessage(): UserMessage {
-    return this._messageCache.getLastMessage();
-  }
-
-  public getAllMessages(): UserMessage[] {
-    return this._messageCache.getAllMessages();
+  public async getAllMessages(): Promise<UserMessage[]> {
+    return await this._messageCache.getAllMessages();
   }
 
   public clearMessages(): void {
@@ -96,8 +97,8 @@ class ChatFrequencyService implements Observable {
     this._messageCache.clear();
   }
 
-  public tickDown(): void {
-    this._messageCache.applyTransformation((userMessage: UserMessage) => {
+  public async tickDown(): Promise<void> {
+    await this._messageCache.applyTransformation((userMessage: UserMessage) => {
       userMessage.size > 0 && userMessage.size--;
       return userMessage;
     });
@@ -111,6 +112,8 @@ class ChatFrequencyService implements Observable {
     }
 
     clearInterval(this.mainTicker);
+
+    this._messageCache.shutdown();
   }
 }
 

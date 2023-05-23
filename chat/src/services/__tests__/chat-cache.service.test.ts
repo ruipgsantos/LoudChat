@@ -20,14 +20,9 @@ describe("Test message cache", () => {
 
   it("should return empty list", () => {
     expect(chatCacheService.getAllMessages()).toEqual([]);
-    expect(chatCacheService.getLastMessage()).toBeUndefined;
+    
   });
-  it("should return the last added message", () => {
-    chatCacheService.addMessage(usermsg1);
-    chatCacheService.addMessage(usermsg2);
-
-    expect(chatCacheService.getLastMessage()).toEqual(usermsg2);
-  });
+  
   it("should return all the messages", () => {
     chatCacheService.addMessage(usermsg1);
     chatCacheService.addMessage(usermsg2);
@@ -40,7 +35,7 @@ describe("Test message cache", () => {
 
     expect(chatCacheService.getAllMessages()).toEqual([usermsg1, usermsg2]);
   });
-  it(`should return the last inserted ${process.env.MESSAGE_CACHE_LIMIT} messages`, () => {
+  it(`should return the last inserted ${process.env.MESSAGE_CACHE_LIMIT} messages`, async () => {
     for (let i = 0; i < 10; i++) {
       chatCacheService.addMessage({
         message: `message${i}`,
@@ -48,12 +43,12 @@ describe("Test message cache", () => {
       });
     }
 
-    const allMessages = chatCacheService.getAllMessages();
+    const allMessages = await chatCacheService.getAllMessages();
     expect(allMessages).toHaveLength(5);
     expect(allMessages[0]).toEqual({ message: "message5", size: 5 });
     expect(allMessages[4]).toEqual({ message: "message9", size: 9 });
   });
-  it(`should perform transformation successfully`, () => {
+  it(`should perform transformation successfully`, async () => {
     for (let i = 0; i < 5; i++) {
       chatCacheService.addMessage({
         message: `message${i}`,
@@ -61,7 +56,7 @@ describe("Test message cache", () => {
       });
     }
 
-    const allMessages = chatCacheService.getAllMessages();
+    const allMessages = await chatCacheService.getAllMessages();
     allMessages.forEach((um) => expect(um.size).toEqual(0));
 
     chatCacheService.applyTransformation((um: UserMessage) => {
