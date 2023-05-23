@@ -12,6 +12,8 @@ import { ChatFrequencyService } from "./services/chat-frequency.service";
 import CacheService from "./interfaces/cache.interface";
 import { UserMessage } from "./types/user-message.type";
 import RedisChatCache from "./services/redis-chat-cache.service";
+import { ChatCacheService } from "./services/chat-cache.service";
+import config from "./env";
 
 const app = express();
 const server = http.createServer(app);
@@ -60,9 +62,14 @@ const io = new Server(server, {
   },
 });
 
-// const chatCache: CacheService<UserMessage> = new ChatCacheService();
-const chatCache: CacheService<UserMessage> = new RedisChatCache();
+let chatCache: CacheService<UserMessage>;
 
+//1 is REDIS, everything else is memory
+if (config.cacheMode === 1) {
+  chatCache = new ChatCacheService();
+} else {
+  chatCache = new RedisChatCache();
+}
 const chatFreqService = new ChatFrequencyService(chatCache);
 const chatNotificationService = new ChatNotificationService(
   io,
@@ -72,10 +79,6 @@ const chatNotificationService = new ChatNotificationService(
 
 app.get("/", (req: Request, res: Response) => {
   res.send("OK!");
-});
-app.get("/messages", async (req: Request, res: Response) => {
-  const msgs = await chatFreqService.getAllMessages();
-  res.send(msgs);
 });
 
 process.on("exit", () => {
