@@ -21,13 +21,17 @@ class ChatFrequencyService implements Observable {
 
   constructor(messageCache: CacheService<UserMessage>) {
     this._messageCache = messageCache;
+  }
 
-    this._messageCache.startup();
+  public async startup(): Promise<void> {
+    await this._messageCache.startup();
 
     //main cache down ticker
     this.mainTicker = setInterval(() => {
       this.tickDown();
     }, config.ticker || 60000);
+
+    console.log(`${ChatFrequencyService.name} started`);
   }
 
   subscribe(observer: Observer): void {

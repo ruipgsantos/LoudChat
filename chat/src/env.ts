@@ -17,5 +17,6 @@ export default {
     port: Number(process.env.REDIS_PORT),
     password: process.env.REDIS_PASSWORD,
     user: process.env.REDIS_USER,
+    url: `rediss://${process.env.REDIS_USER}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   },
 };
