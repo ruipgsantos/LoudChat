@@ -55,7 +55,9 @@ class ChatCacheService implements CacheService<UserMessage> {
     this.isAtLimit = false;
   }
 
-  public async startup(): Promise<void> {}
+  public async startup(): Promise<void> {
+    console.log(`${ChatCacheService.name} started`);
+  }
   public async shutdown(): Promise<void> {
     this.clear();
   }

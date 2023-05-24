@@ -24,6 +24,10 @@ export default class ChatNotificationService implements Observer {
 
     this._ioServer = server;
     this._ioServer.engine.use(session);
+  }
+
+  public async startup(): Promise<void> {
+    await this._chatFrequencyService.startup();
     this._chatFrequencyService.subscribe(this);
     this._ioServer.on("connection", async (socket: Socket) => {
       const socketLogStr = this.getSocketLogString(socket);
@@ -53,6 +57,8 @@ export default class ChatNotificationService implements Observer {
       console.log(`${socketLogStr} disconnected`);
       socket.leave(this.CHAT_ROOM);
     });
+
+    console.log(`${ChatNotificationService.name} started`);
   }
 
   publish(): void {

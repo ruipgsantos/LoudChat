@@ -62,27 +62,33 @@ const io = new Server(server, {
   },
 });
 
-let chatCache: CacheService<UserMessage>;
+const setup = async () => {
+  let chatCache: CacheService<UserMessage>;
 
-//1 is REDIS, everything else is memory
-if (config.cacheMode === 1) {
-  chatCache = new ChatCacheService();
-} else {
-  chatCache = new RedisChatCache();
-}
-const chatFreqService = new ChatFrequencyService(chatCache);
-const chatNotificationService = new ChatNotificationService(
-  io,
-  serverSession,
-  chatFreqService
-);
+  //1 is REDIS, everything else is memory
+  if (config.cacheMode === 1) {
+    chatCache = new RedisChatCache();
+  } else {
+    chatCache = new ChatCacheService();
+  }
+  const chatFreqService = new ChatFrequencyService(chatCache);
+  const chatNotificationService = new ChatNotificationService(
+    io,
+    serverSession,
+    chatFreqService
+  );
+
+  await chatNotificationService.startup();
+
+  process.on("exit", () => {
+    chatFreqService.shutDown();
+  });
+};
+
+setup();
 
 app.get("/", (req: Request, res: Response) => {
   res.send("OK!");
-});
-
-process.on("exit", () => {
-  chatFreqService.shutDown();
 });
 
 export default server;

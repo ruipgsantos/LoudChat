@@ -19,12 +19,7 @@ export default class RedisChatCache implements CacheService<UserMessage> {
   public constructor() {
     const redisConf = config.redis;
     this._client = createClient({
-      socket: {
-        host: redisConf.host,
-        port: redisConf.port,
-      },
-      password: redisConf.password,
-      username: redisConf.user,      
+      url: redisConf.url,
     });
 
     this._client.on("error", (err: any) => {
@@ -121,8 +116,15 @@ export default class RedisChatCache implements CacheService<UserMessage> {
   }
 
   public async startup(): Promise<void> {
-    await this._client.connect();
+    console.log(`${RedisChatCache.name} starting`);
+    try {
+      await this._client.connect();
+    } catch (err) {
+      console.error(err);
+    }
+    console.log(`${RedisChatCache.name} started`);
   }
+
   public async shutdown(): Promise<void> {
     await this._client.disconnect();
   }
