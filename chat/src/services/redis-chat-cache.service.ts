@@ -24,6 +24,7 @@ export default class RedisChatCache implements CacheService<UserMessage> {
         port: redisConf.port,
       },
       password: redisConf.password,
+      username: redisConf.user,      
     });
 
     this._client.on("error", (err: any) => {
