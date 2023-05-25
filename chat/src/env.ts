@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 export default {
+  production: process.env.PROD === "1",
   corsOrigins: (() => {
     let res: string[] = [];
     const corsEnv = process.env.CORS_ORIGINS;
