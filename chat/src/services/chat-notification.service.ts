@@ -2,16 +2,34 @@ import { Server, Socket } from "socket.io";
 import { NotificationSession } from "../interfaces/notification.interface";
 import { ChatFrequencyService } from "./chat-frequency.service";
 import Observer from "../interfaces/observer.interface";
-import { ChatCacheService } from "./chat-cache.service";
 
 export default class ChatNotificationService implements Observer {
   readonly CHAT_ROOM = "chat_room";
   readonly CHAT_EVENT = "chat_event";
   readonly TICK_EVENT = "tick_event";
   readonly CONNECT_EVENT = "connect_event";
+  readonly USER_EVENT = "user_event";
 
   private _ioServer: Server;
   private _chatFrequencyService: ChatFrequencyService;
+
+  private _userSessions = new Set();
+  private addSession(sessionId: string) {
+    if (this._userSessions.has(sessionId)) return;
+    this._userSessions.add(sessionId);
+    this._ioServer
+      .to(this.CHAT_ROOM)
+      .emit(this.USER_EVENT, this._userSessions.size);
+    console.log(`there are ${this._userSessions.size} people listening`);
+  }
+  private removeSession(sessionId: string) {
+    if (!this._userSessions.has(sessionId)) return;
+    this._userSessions.delete(sessionId);
+    this._ioServer
+      .to(this.CHAT_ROOM)
+      .emit(this.USER_EVENT, this._userSessions.size);
+    console.log(`there are ${this._userSessions.size} people listening`);
+  }
 
   constructor(
     server: Server,
@@ -47,15 +65,17 @@ export default class ChatNotificationService implements Observer {
           sessionId
         );
 
-        //cache this message and send back with size to all (including self)
         this._ioServer.to(this.CHAT_ROOM).emit(this.CHAT_EVENT, userMessage);
       });
-    });
 
-    this._ioServer.on("disconnect", (socket: Socket) => {
-      const socketLogStr = this.getSocketLogString(socket);
-      console.log(`${socketLogStr} disconnected`);
-      socket.leave(this.CHAT_ROOM);
+      this.addSession(sessionId);
+
+      socket.on("disconnect", () => {
+        this.removeSession(socket.request.session.id);
+        const socketLogStr = this.getSocketLogString(socket);
+        console.log(`${socketLogStr} disconnected`);
+        socket.leave(this.CHAT_ROOM);
+      });
     });
 
     console.log(`${ChatNotificationService.name} started`);

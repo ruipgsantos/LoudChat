@@ -3,11 +3,12 @@ import "./chatwindow.css";
 import { useEffect, useCallback, useState, useRef } from "react";
 import io, { Socket } from "socket.io-client";
 import { UserMessage } from "./external/UserMessage";
-import { CHAT_EVENT, CONNECT_EVENT, TICK_EVENT } from "./external/SocketEvents";
+import { CHAT_EVENT, CONNECT_EVENT, TICK_EVENT, USER_EVENT } from "./external/SocketEvents";
 
 
 export default function ChatWindow() {
 
+    const [userCount, setUserCount] = useState(0);
     const [talkText, setTalkText] = useState<string>("");
     const [currentChat, setCurrentChat] = useState<UserMessage[]>([]);
     const chatTextRef = useRef<any>(null);
@@ -67,6 +68,12 @@ export default function ChatWindow() {
                     })
                 })
             })
+
+            socketio?.on(USER_EVENT, (svUserCount: number) => {
+                if (svUserCount != null) {
+                    setUserCount(svUserCount);
+                }
+            })
         });
     }, [keepToBottom, socket])
 
@@ -89,6 +96,16 @@ export default function ChatWindow() {
         return res;
     }
 
+    const getPlaceholder = () => {
+        if (userCount < 2) {
+            return 'You are alone...';
+        } else if (userCount === 2) {
+            return 'There is 1 person here...';
+        }
+
+        return `There are ${userCount - 1} people here...`;
+    }
+
 
     return (
         <div className="chatwindow">
@@ -98,7 +115,7 @@ export default function ChatWindow() {
                 </div>
             </div>
             <div className="inputContainer">
-                <input onKeyDown={(e) => {
+                <input placeholder={getPlaceholder()} onKeyDown={(e) => {
                     if (e.key === "Enter") {
                         e.preventDefault();
                         talk();

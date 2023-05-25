@@ -12,12 +12,12 @@ class ChatFrequencyService implements Observable {
   private mainTicker: NodeJS.Timer;
 
   private _subscribers: Observer[] = [];
-
-  //memory db
   private _userFrequencies: { [id: string]: number } = {};
   private _userTickers: { [id: string]: NodeJS.Timer } = {};
   private _userTickerTimes: { [id: string]: number } = {};
   private _messageCache: CacheService<UserMessage>;
+
+  private _lastTick: string = new Date().toLocaleString();
 
   constructor(messageCache: CacheService<UserMessage>) {
     this._messageCache = messageCache;
@@ -108,6 +108,9 @@ class ChatFrequencyService implements Observable {
     });
 
     this._subscribers.forEach((s) => s.publish());
+
+    console.log(`Ticking down... Last tick was on ${this._lastTick}`);
+    this._lastTick = new Date().toLocaleString();
   }
 
   public shutDown() {
