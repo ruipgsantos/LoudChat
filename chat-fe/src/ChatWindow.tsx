@@ -8,11 +8,9 @@ import { CHAT_EVENT, CONNECT_EVENT, TICK_EVENT } from "./external/SocketEvents";
 
 export default function ChatWindow() {
 
-
     const [talkText, setTalkText] = useState<string>("");
     const [currentChat, setCurrentChat] = useState<UserMessage[]>([]);
     const chatTextRef = useRef<any>(null);
-
     const [socket, setSocket] = useState<Socket>();
 
     const keepToBottom = useCallback(() => {
@@ -84,7 +82,7 @@ export default function ChatWindow() {
         for (let i = 0; i < currentChat.length; i++) {
             const words = currentChat[i].message.split(' ');
             for (let j = 0; j < words.length; j++) {
-                res.push(<span key={j + 1 * i + 1} style={{ fontSize: currentChat[i].size * 1.5 + 10, transition: "font-size 5s" }}>{words[j]}</span>)
+                res.push(<span key={`${i}${j}`} style={{ fontSize: currentChat[i].size * 1.5 + 10, transition: "font-size 5s" }}>{words[j]}</span>)
             }
         }
 

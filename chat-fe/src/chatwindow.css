@@ -33,14 +33,21 @@ div {
     /* border: solid 1px rgb(180, 180, 180); */
     background-color: hsl(0, 0%, 15%);
 
-    width:100vw;
+    width: 100vw;
     height: 100vh;
-    
+
 
     top: 0;
     left: 0;
 
-    position:absolute;
+    position: absolute;
+}
+
+@media only screen and (max-width: 480px) {
+    .chatContainer {
+        width: 95vw;
+        height: 95vh;
+    }
 }
 
 input {
@@ -54,6 +61,12 @@ input {
     background-color: hsl(0, 0%, 15%);
 }
 
+@media only screen and (max-width: 480px) {
+    input {
+        font-size: 10pt;
+        height: 3vh;
+    }
+}
 .inputContainer {
     padding: 5px;
     border: solid 1px rgb(180, 180, 180);
@@ -65,7 +78,7 @@ input {
 .chatwindow {
     display: flex;
     flex-direction: column;
-    width: 50vw;
+    width: 60vw;
 }
 
 .chatwindow * {
