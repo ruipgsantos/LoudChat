@@ -1,4 +1,6 @@
 import express, { Request, Response } from "express";
+import RedisStore from "connect-redis";
+import getRedisClient from "./Redis.client";
 import http from "http";
 import session, { Session } from "express-session";
 import { Server } from "socket.io";
@@ -30,7 +32,21 @@ app.use(
   })
 );
 
+const getSessionStore = () => {
+  if (config.production) {
+    console.log(`using redis session store in production`);
+    const redisClient = getRedisClient(config.redis.url);
+    redisClient.connect().catch(console.error);
+    return new RedisStore({
+      client: redisClient,
+    });
+  }
+
+  return;
+};
+
 const serverSession = session({
+  store: getSessionStore(),
   secret: uuidv4(),
   resave: false,
   saveUninitialized: true,

@@ -1,7 +1,8 @@
 import { UserMessage } from "../types/user-message.type";
 import CacheService from "../interfaces/cache.interface";
 import config from "../env";
-import { createClient, RedisClientType } from "redis";
+import getRedisClient from "../Redis.client";
+import { RedisClientType } from "redis";
 
 /**
  * This implementation of UserMessage cache needs a HashMap to represent the data and
@@ -18,14 +19,7 @@ export default class RedisChatCache implements CacheService<UserMessage> {
 
   public constructor() {
     const redisConf = config.redis;
-    this._client = createClient({
-      url: redisConf.url,
-    });
-
-    this._client.on("error", (err: any) => {
-      console.log(`redis error: ${err}`);
-    });
-
+    this._client = getRedisClient(redisConf.url);
     this.CACHE_LIMIT = config.messageCacheLimit || 20;
   }
 
