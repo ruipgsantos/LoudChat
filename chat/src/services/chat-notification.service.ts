@@ -2,16 +2,28 @@ import { Server, Socket } from "socket.io";
 import { NotificationSession } from "../interfaces/notification.interface";
 import { ChatFrequencyService } from "./chat-frequency.service";
 import Observer from "../interfaces/observer.interface";
-import { ChatCacheService } from "./chat-cache.service";
 
 export default class ChatNotificationService implements Observer {
   readonly CHAT_ROOM = "chat_room";
   readonly CHAT_EVENT = "chat_event";
   readonly TICK_EVENT = "tick_event";
   readonly CONNECT_EVENT = "connect_event";
+  readonly USER_EVENT = "user_event";
 
   private _ioServer: Server;
   private _chatFrequencyService: ChatFrequencyService;
+
+  private _userCount = 0;
+  private incUserCount() {
+    this._userCount++;
+    this._ioServer.to(this.CHAT_ROOM).emit(this.USER_EVENT, this._userCount);
+    console.log(`there are ${this._userCount} people listening`);
+  }
+  private decUserCount() {
+    this._userCount--;
+    this._ioServer.to(this.CHAT_ROOM).emit(this.USER_EVENT, this._userCount);
+    console.log(`there are ${this._userCount} people listening`);
+  }
 
   constructor(
     server: Server,
@@ -46,13 +58,15 @@ export default class ChatNotificationService implements Observer {
           message,
           sessionId
         );
-
-        //cache this message and send back with size to all (including self)
+        
         this._ioServer.to(this.CHAT_ROOM).emit(this.CHAT_EVENT, userMessage);
       });
+
+      this.incUserCount();
     });
 
     this._ioServer.on("disconnect", (socket: Socket) => {
+      this.decUserCount();
       const socketLogStr = this.getSocketLogString(socket);
       console.log(`${socketLogStr} disconnected`);
       socket.leave(this.CHAT_ROOM);
