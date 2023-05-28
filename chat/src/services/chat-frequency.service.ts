@@ -58,7 +58,9 @@ class ChatFrequencyService implements Observable {
     } else {
       //every time a message is added
       //increase frequency (size)
-      this._userFrequencies[id]++;
+      if (this._userFrequencies[id] < config.messageBaseSizeLimit) {
+        this._userFrequencies[id]++;
+      }
 
       //increase rate at which the size will tick down
       this.refreshUserTicker(id);

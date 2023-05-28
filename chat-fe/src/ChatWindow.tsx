@@ -13,10 +13,13 @@ export default function ChatWindow() {
     const [currentChat, setCurrentChat] = useState<UserMessage[]>([]);
     const chatTextRef = useRef<any>(null);
     const [socket, setSocket] = useState<Socket>();
+    const [loaded, setLoaded] = useState<Boolean>(false);
 
     const keepToBottom = useCallback(() => {
         setTimeout(() => {
-            chatTextRef.current!.scrollTop = chatTextRef.current?.scrollHeight
+            if (chatTextRef.current) {
+                chatTextRef.current.scrollTop = chatTextRef.current?.scrollHeight
+            }
         }, 100)
     }, [])
 
@@ -38,43 +41,44 @@ export default function ChatWindow() {
         const socketio = io(process.env.REACT_APP_CHAT_API as string, { withCredentials: true });
         socketio.on("connect", () => {
             setSocket(socketio);
+        });
 
-
-            socketio?.on(CHAT_EVENT, (userMessage: UserMessage) => {
-                if (userMessage) {
-                    setCurrentChat((cc) => {
-                        return [...cc, userMessage]
-                    })
-                    keepToBottom();
-                }
-            });
-
-            socketio?.on(CONNECT_EVENT, (userMessages: UserMessage[]) => {
-                if (userMessages && userMessages.length > 0) {
-                    setCurrentChat(userMessages);
-                    keepToBottom();
-                }
-
-            })
-
-            socketio?.on(TICK_EVENT, () => {
+        socketio?.on(CHAT_EVENT, (userMessage: UserMessage) => {
+            if (userMessage) {
                 setCurrentChat((cc) => {
-                    const aux = [...cc];
-                    return aux.map((um: UserMessage) => {
-                        if (um.size > 0) {
-                            um.size--;
-                        }
-                        return um;
-                    })
+                    return [...cc, userMessage]
+                })
+                keepToBottom();
+            }
+        });
+
+        socketio?.on(CONNECT_EVENT, (userMessages: UserMessage[]) => {
+            if (userMessages && userMessages.length > 0) {
+                setCurrentChat(userMessages);
+                keepToBottom();
+            }
+
+            setLoaded(true);
+
+        })
+
+        socketio?.on(TICK_EVENT, () => {
+            setCurrentChat((cc) => {
+                const aux = [...cc];
+                return aux.map((um: UserMessage) => {
+                    if (um.size > 0) {
+                        um.size--;
+                    }
+                    return um;
                 })
             })
+        })
 
-            socketio?.on(USER_EVENT, (svUserCount: number) => {
-                if (svUserCount != null) {
-                    setUserCount(svUserCount);
-                }
-            })
-        });
+        socketio?.on(USER_EVENT, (svUserCount: number) => {
+            if (svUserCount != null) {
+                setUserCount(svUserCount);
+            }
+        })
     }, [keepToBottom, socket])
 
     //start socketio
@@ -84,12 +88,12 @@ export default function ChatWindow() {
     }, [])
 
     const getMessageElements = () => {
-        const res = [];
+        const res: JSX.Element[] = [];
 
         for (let i = 0; i < currentChat.length; i++) {
             const words = currentChat[i].message.split(' ');
             for (let j = 0; j < words.length; j++) {
-                res.push(<span key={`${i}${j}`} style={{ fontSize: currentChat[i].size * 1.5 + 10, transition: "font-size 5s" }}>{words[j]}</span>)
+                res.push(<span key={`${i}${j}`} style={{ fontSize: currentChat[i].size * 1.5 + 10, transition: "font-size 5s", marginTop: (-1 * currentChat[i].size) }}>{words[j]}</span>)
             }
         }
 
@@ -104,26 +108,47 @@ export default function ChatWindow() {
         }
 
         return `There are ${userCount - 1} people here...`;
-    }
 
+
+
+    }
 
     return (
         <div className="chatwindow">
-            <div className="chatContainer">
-                <div ref={chatTextRef} className="textArea">
-                    {getMessageElements()}
+            {loaded ? <div className="loadedContainer">
+                <div className="chatContainer">
+                    <div ref={chatTextRef} className="textArea">
+                        {getMessageElements()}
+                    </div>
                 </div>
-            </div>
-            <div className="inputContainer">
-                <input placeholder={getPlaceholder()} onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                        e.preventDefault();
-                        talk();
-                    }
-                }} value={talkText} onChange={(event) => {
-                    setTalkText(tt => event.target.value);
-                }}></input>
-            </div>
+                <div className="inputContainer">
+                    <input
+                        maxLength={50}
+                        onSelect={(e) => e.preventDefault()}
+                        onSelectCapture={(e) => e.preventDefault()}
+                        onPaste={(e) => e.preventDefault()}
+                        onCopy={(e) => e.preventDefault()}
+                        onCut={(e) => e.preventDefault()}
+                        onDrag={(e) => e.preventDefault()}
+                        onDrop={(e) => e.preventDefault()}
+                        autoComplete="false"
+                        placeholder={getPlaceholder()} onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                talk();
+                            }
+                        }} value={talkText} onChange={(event) => {
+                            setTalkText(tt => event.target.value);
+                        }}></input>
+                </div>
+            </div> : <div className="loadingContainer">
+                <div>
+                    Loud</div>
+                <div>
+                    Chat</div>
+            </div>}
+
+
         </div>
     )
 }

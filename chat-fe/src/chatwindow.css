@@ -3,6 +3,24 @@ input:focus {
     outline: none;
 }
 
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.loadedContainer {
+    animation: fadeIn 5s;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .textArea {
     height: 100%;
     width: 100%;
@@ -22,6 +40,47 @@ input:focus {
 
 }
 
+.loadingContainer {
+    width: 98vw;
+    height: 98vh;
+
+    top: 0;
+    left: 0;
+
+    position: absolute;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loadingContainer>div {
+    color: rgb(180, 180, 180);
+    font-size: 114pt;
+    font-weight: 200;
+    font-variant-caps: unicase;
+
+    animation-duration: 120s;
+    animation-name: biggerFront;
+    animation-iteration-count: infinite;
+
+    text-align: center;
+}
+
+@keyframes biggerFront {
+    from {
+        font-size: 30pt;
+        font-weight: 0;
+        letter-spacing: normal;
+    }
+
+    to {
+        font-size: 150pt;
+        font-weight: 800;
+        letter-spacing: -30px;
+    }
+}
+
 .textArea>span,
 div {
     margin: 0px 3px 0px 3px;
@@ -33,9 +92,8 @@ div {
     /* border: solid 1px rgb(180, 180, 180); */
     background-color: hsl(0, 0%, 15%);
 
-    width: 100vw;
-    height: 100vh;
-
+    width: 98vw;
+    height: 98vh;
 
     top: 0;
     left: 0;
@@ -67,6 +125,7 @@ input {
         height: 3vh;
     }
 }
+
 .inputContainer {
     padding: 5px;
     border: solid 1px rgb(180, 180, 180);
