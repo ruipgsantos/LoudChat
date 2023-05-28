@@ -11,6 +11,7 @@ export default {
     return res;
   })(),
   messageCacheLimit: Number(process.env.MESSAGE_CACHE_LIMIT),
+  messageBaseSizeLimit: Number(process.env.MESSAGE_BASE_SIZE_LIMIT) || 43,
   ticker: Number(process.env.TICKER),
   cacheMode: Number(process.env.CACHE_MODE) || 0,
   redis: {
