@@ -54,11 +54,10 @@ input:focus {
     justify-content: center;
 }
 
-.loadingContainer>div {
+.loadingContainer>.loadingTitle {
     color: rgb(180, 180, 180);
     font-size: 114pt;
     font-weight: 200;
-    font-variant-caps: unicase;
 
     animation-duration: 120s;
     animation-name: biggerFront;
@@ -70,7 +69,7 @@ input:focus {
 @keyframes biggerFront {
     from {
         font-size: 30pt;
-        font-weight: 0;
+        font-weight: 200;
         letter-spacing: normal;
     }
 
@@ -78,6 +77,39 @@ input:focus {
         font-size: 150pt;
         font-weight: 800;
         letter-spacing: -30px;
+    }
+}
+
+
+.rotatingLine {
+    margin-left: auto;
+    position: absolute;
+    bottom: 10%;
+    left: 47%;
+    font-size: 20pt;
+    text-align: center;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+    color: rgb(180, 180, 180);
+}
+
+@-moz-keyframes spin {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
     }
 }
 
