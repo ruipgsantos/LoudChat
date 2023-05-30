@@ -141,14 +141,16 @@ export default function ChatWindow() {
                             setTalkText(tt => event.target.value);
                         }}></input>
                 </div>
-            </div> : <div className="loadingContainer">
-                <div>
-                    Loud</div>
-                <div>
-                    Chat</div>
+            </div> : <div>
+                <div className="loadingContainer">
+                    <div className="loadingTitle">
+                        Loud</div>
+                    <div className="loadingTitle">
+                        Chat</div>
+                </div>
+
+                    <div className="rotatingLine">|</div>
             </div>}
-
-
         </div>
     )
 }
